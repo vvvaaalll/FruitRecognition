@@ -110,7 +110,6 @@ public class ImageUpload extends AppCompatActivity {
                         = keySet.toArray(new String[keySet.size()]);
 
 
-
                 DocumentReference documentReference = fStore.collection("users").document(userID).collection("fruits").document();
                 if (results != null) {
 
@@ -123,17 +122,6 @@ public class ImageUpload extends AppCompatActivity {
                     fruit.put("percentage2", sortedMap.get(fruitArray[5 - 1])*100);
                     fruit.put("percentage3", sortedMap.get(fruitArray[4 - 1])*100);
                     fruit.put("imgName", imgName);
-
-                    /*
-                    * fruit.put("fruit1", fruitArray[6 - 1] );
-                    fruit.put("fruit2", fruitArray[5 - 1]);
-                    fruit.put("fruit3", fruitArray[4 - 1]);
-                    fruit.put("percentage1", sortedMap.get(fruitArray[6 - 1])*100);
-                    fruit.put("percentage2", sortedMap.get(fruitArray[5 - 1])*100);
-                    fruit.put("percentage3", sortedMap.get(fruitArray[4 - 1])*100);
-                    fruit.put("imgName", imgName);
-                    * */
-
 
                     documentReference.set(fruit).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -204,8 +192,6 @@ public class ImageUpload extends AppCompatActivity {
     }
 
     private Map<String,Float> ProcessImage(){
-
-
 
         ImageProcessor imageProcessor =
                 new ImageProcessor.Builder()

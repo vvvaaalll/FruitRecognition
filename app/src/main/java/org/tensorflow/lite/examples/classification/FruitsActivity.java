@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -110,6 +112,7 @@ public class FruitsActivity extends AppCompatActivity {
         return true;
     }
 
+    @SuppressLint("NewApi")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
@@ -121,19 +124,27 @@ public class FruitsActivity extends AppCompatActivity {
 
             case R.id.deleteAccount:
 
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                fruitsArrayList.forEach((fruit) ->{
+                    try {
+                        if(fruit.getImgName().isEmpty()) {
+                            throw new Exception();
+                        }else{
+                            FirebaseStorage.getInstance().getReference()
+                                    .child("fruits")
+                                    .child(fruit.getImgName()).delete();
+                        }
+                    }catch (Exception e) {
 
-                user.delete()
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(FruitsActivity.this, "Succesfully deleted your account" , Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(getApplicationContext(),LoginActivity.class));
-                                }
-                            }
-                        });
+                        Log.e("",e.getMessage());
+                    }
 
+                });
+                FirebaseFirestore.getInstance().collection("users")
+                        .document(FirebaseAuth.getInstance().getUid().toString()).delete();
+                FirebaseAuth.getInstance().getCurrentUser().delete();
+
+                Toast.makeText(FruitsActivity.this, "Successfully deleted your account" , Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getApplicationContext(),LoginActivity.class));
 
                 finish();
                 return true;
