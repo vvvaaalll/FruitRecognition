@@ -113,7 +113,7 @@ public class FruitAdapter extends RecyclerView.Adapter<FruitAdapter.MyViewHolder
                 @Override
                 public void onClick(View v) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(itemView.getContext());
-                    builder.setTitle("Do you want to delete this tarantula?");
+                    builder.setTitle("Do you want to delete this fruit?");
 
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
