@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "861696740759",
+    "project_id": "fruits-6ee82",
+    "storage_bucket": "fruits-6ee82.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861696740759:android:06cf4180ba7311d07a88d2",
+        "android_client_info": {
+          "package_name": "org.tensorflow.lite.examples.classification"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "861696740759-0g652ej27bgdorig70cjrefnmfoldbcr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9JjNGL4i3By2ET6A2bXLu_uiC-RdoF-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "861696740759-0g652ej27bgdorig70cjrefnmfoldbcr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861696740759:android:f4bcd1cddca444df7a88d2",
+        "android_client_info": {
+          "package_name": "vloboda.ruap.fruits"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "861696740759-0g652ej27bgdorig70cjrefnmfoldbcr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9JjNGL4i3By2ET6A2bXLu_uiC-RdoF-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "861696740759-0g652ej27bgdorig70cjrefnmfoldbcr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
