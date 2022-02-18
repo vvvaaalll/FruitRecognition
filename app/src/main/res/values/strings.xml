@@ -22,4 +22,9 @@
         <item>GPU</item>
         <item>NNAPI</item>
     </string-array>
+
+    <string name="missingEmail">Email is Required.</string>
+    <string name="missingPassword">Password is Required.</string>
+    <string name="shortPassword">Password must be at least 6 characters</string>
+
 </resources>

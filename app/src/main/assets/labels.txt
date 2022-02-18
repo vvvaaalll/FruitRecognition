@@ -1,6 +1,6 @@
 apple
 banana
+kiwi
 lemon
 orange
 strawberry
-kiwi

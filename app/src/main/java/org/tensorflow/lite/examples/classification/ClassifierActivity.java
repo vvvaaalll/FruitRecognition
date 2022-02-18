@@ -16,14 +16,30 @@
 
 package org.tensorflow.lite.examples.classification;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Typeface;
 import android.media.ImageReader.OnImageAvailableListener;
 import android.os.SystemClock;
+import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.IOException;
 import java.util.List;
 import org.tensorflow.lite.examples.classification.env.BorderedText;
@@ -41,9 +57,13 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
   private Integer sensorOrientation;
   public Classifier classifier;
   private BorderedText borderedText;
-  /** Input image size of the model along x axis. */
+  /**
+   * Input image size of the model along x axis.
+   */
   private int imageSizeX;
-  /** Input image size of the model along y axis. */
+  /**
+   * Input image size of the model along y axis.
+   */
   private int imageSizeY;
 
   @Override
@@ -59,8 +79,8 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
   @Override
   public void onPreviewSizeChosen(final Size size, final int rotation) {
     final float textSizePx =
-        TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, TEXT_SIZE_DIP, getResources().getDisplayMetrics());
+            TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, TEXT_SIZE_DIP, getResources().getDisplayMetrics());
     borderedText = new BorderedText(textSizePx);
     borderedText.setTypeface(Typeface.MONOSPACE);
 
@@ -86,32 +106,32 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
     final int cropSize = Math.min(previewWidth, previewHeight);
 
     runInBackground(
-        new Runnable() {
-          @Override
-          public void run() {
-            if (classifier != null) {
-              final long startTime = SystemClock.uptimeMillis();
-              final List<Classifier.Recognition> results =
-                  classifier.recognizeImage(rgbFrameBitmap, sensorOrientation);
-              lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
-              LOGGER.v("Detect: %s", results);
+            new Runnable() {
+              @Override
+              public void run() {
+                if (classifier != null) {
+                  final long startTime = SystemClock.uptimeMillis();
+                  final List<Classifier.Recognition> results =
+                          classifier.recognizeImage(rgbFrameBitmap, sensorOrientation);
+                  lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
+                  LOGGER.v("Detect: %s", results);
 
-              runOnUiThread(
-                  new Runnable() {
-                    @Override
-                    public void run() {
-                      showResultsInBottomSheet(results);
-                      showFrameInfo(previewWidth + "x" + previewHeight);
-                      showCropInfo(imageSizeX + "x" + imageSizeY);
-                      showCameraResolution(cropSize + "x" + cropSize);
-                      showRotationInfo(String.valueOf(sensorOrientation));
-                      showInference(lastProcessingTimeMs + "ms");
-                    }
-                  });
-            }
-            readyForNextImage();
-          }
-        });
+                  runOnUiThread(
+                          new Runnable() {
+                            @Override
+                            public void run() {
+                              showResultsInBottomSheet(results);
+                              showFrameInfo(previewWidth + "x" + previewHeight);
+                              showCropInfo(imageSizeX + "x" + imageSizeY);
+                              showCameraResolution(cropSize + "x" + cropSize);
+                              showRotationInfo(String.valueOf(sensorOrientation));
+                              showInference(lastProcessingTimeMs + "ms");
+                            }
+                          });
+                }
+                readyForNextImage();
+              }
+            });
   }
 
   @Override
@@ -135,15 +155,15 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
     if (device == Device.GPU && model == Model.QUANTIZED) {
       LOGGER.d("Not creating classifier: GPU doesn't support quantized models.");
       runOnUiThread(
-          () -> {
-            Toast.makeText(this, "GPU does not yet supported quantized models.", Toast.LENGTH_LONG)
-                .show();
-          });
+              () -> {
+                Toast.makeText(this, "GPU does not yet supported quantized models.", Toast.LENGTH_LONG)
+                        .show();
+              });
       return;
     }
     try {
       LOGGER.d(
-          "Creating classifier (model=%s, device=%s, numThreads=%d)", model, device, numThreads);
+              "Creating classifier (model=%s, device=%s, numThreads=%d)", model, device, numThreads);
       classifier = Classifier.create(this, model, device, numThreads);
     } catch (IOException e) {
       LOGGER.e(e, "Failed to create classifier.");
@@ -153,4 +173,58 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
     imageSizeX = classifier.getImageSizeX();
     imageSizeY = classifier.getImageSizeY();
   }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.main_menu, menu);
+    return true;
+  }
+
+
+  @Override
+  public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    switch (item.getItemId()){
+      case R.id.logOutMenu:
+        FirebaseAuth.getInstance().signOut();
+        startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+        finish();
+        return true;
+
+      case R.id.deleteAccount:
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        user.delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                  @Override
+                  public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                      Toast.makeText(ClassifierActivity.this, "Succesfully deleted your account" , Toast.LENGTH_SHORT).show();
+                      startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+                    }
+                  }
+                });
+
+
+        finish();
+        return true;
+
+      case R.id.liveCam:
+        startActivity(new Intent(getApplicationContext(),ClassifierActivity.class));
+        finish();
+        return true;
+
+      case R.id.images:
+        startActivity(new Intent(getApplicationContext(),FruitsActivity.class));
+        finish();
+        return true;
+
+
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
+
+
 }
